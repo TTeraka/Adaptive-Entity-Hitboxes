@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "adaptive_entity_hitboxes",
+  "version": "${version}",
+  "name": "Adaptive Entity Hitboxes",
+  "description": "Adapts entity hitboxes to the rough bounds of Entity Model Features models.",
+  "authors": [
+    "Teraka"
+  ],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.teraka.aeh.AdaptiveEntityHitboxes"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.5",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "entity_model_features": ">=3.3.9"
+  }
+}
