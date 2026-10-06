@@ -9,14 +9,16 @@ The current development checkpoint includes:
 
 - Fabric client entry point
 - Fabric mod metadata
-- Local EMF and ETF development dependencies
+- EMF and ETF development dependencies resolved through Modrinth Maven
 - Java 21 and Minecraft 1.21.1 Gradle configuration
 - Detection of active custom EMF model variants
-- Model-space bounds measurement and comparison logging
+- Neutral-pose model-space bounds measurement
+- Support for renderer-level scaling such as cave spiders
+- Client-side application of measured width and height to adult non-player living entities
 
-Entity dimensions are not changed yet. Version 0.2 measures the geometry EMF renders for each
-observed model variant and logs its width, height, depth, suggested entity width, and the entity's
-vanilla dimensions. These measurements must be validated in game before they are applied as hitboxes.
+Version 0.3 applies the measured dimensions to each matching rendered entity and refreshes its
+client-side bounding box. Vanilla eye height and attachment positions remain unchanged. Players and
+baby entities are excluded from this first functional checkpoint.
 
 ## AI-assisted development
 

@@ -4,10 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.teraka.aeh.mixin.accessor.EmfModelPartVanillaAccessor;
 import dev.teraka.aeh.mixin.accessor.ModelPartAccessor;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import traben.entity_model_features.models.parts.EMFModelPartVanilla;
 
+import java.util.List;
 import java.util.Optional;
 
 public final class ModelBoundsCalculator {
@@ -16,10 +18,28 @@ public final class ModelBoundsCalculator {
     private ModelBoundsCalculator() {
     }
 
-    public static Optional<ModelBounds> calculate(ModelPart root, int variant) {
-        MutableBounds bounds = new MutableBounds();
-        visit(root, variant, new PoseStack(), bounds);
-        return bounds.toImmutable();
+    public static Optional<ModelBounds> calculate(
+            ModelPart root,
+            int variant,
+            float rendererScaleX,
+            float rendererScaleY,
+            float rendererScaleZ
+    ) {
+        List<ModelPart> parts = root.getAllParts().toList();
+        List<PartPose> renderedPoses = parts.stream().map(ModelPart::storePose).toList();
+
+        try {
+            parts.forEach(ModelPart::resetPose);
+            MutableBounds bounds = new MutableBounds();
+            PoseStack poseStack = new PoseStack();
+            poseStack.scale(rendererScaleX, rendererScaleY, rendererScaleZ);
+            visit(root, variant, poseStack, bounds);
+            return bounds.toImmutable();
+        } finally {
+            for (int index = 0; index < parts.size(); index++) {
+                parts.get(index).loadPose(renderedPoses.get(index));
+            }
+        }
     }
 
     private static void visit(ModelPart part, int variant, PoseStack poseStack, MutableBounds bounds) {

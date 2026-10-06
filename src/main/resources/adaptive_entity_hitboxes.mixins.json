@@ -3,6 +3,7 @@
   "package": "dev.teraka.aeh.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "LivingEntityDimensionsMixin",
     "LivingEntityRendererMixin",
     "accessor.EmfModelPartVanillaAccessor",
     "accessor.ModelPartAccessor"
