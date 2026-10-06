@@ -5,16 +5,18 @@ of custom Entity Model Features (EMF) models with a single Minecraft entity boun
 
 ## Current status
 
-This repository currently contains only the project scaffold:
+The current development checkpoint includes:
 
 - Fabric client entry point
 - Fabric mod metadata
-- EMF declared as a required runtime mod
+- Local EMF and ETF development dependencies
 - Java 21 and Minecraft 1.21.1 Gradle configuration
+- Detection of active custom EMF model variants
+- Model-space bounds measurement and comparison logging
 
-No hitbox behavior is implemented yet. The next development step is to identify a stable EMF 3.3.9
-integration point for obtaining the active model root, then calculate and cache conservative model
-bounds before changing any entity dimensions.
+Entity dimensions are not changed yet. Version 0.2 measures the geometry EMF renders for each
+observed model variant and logs its width, height, depth, suggested entity width, and the entity's
+vanilla dimensions. These measurements must be validated in game before they are applied as hitboxes.
 
 ## AI-assisted development
 

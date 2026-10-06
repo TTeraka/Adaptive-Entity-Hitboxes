@@ -1,6 +1,7 @@
 package dev.teraka.aeh.integration;
 
 import dev.teraka.aeh.AdaptiveEntityHitboxes;
+import dev.teraka.aeh.bounds.ModelBoundsCalculator;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * bounds can be calculated and validated independently.</p>
  */
 public final class EmfModelCapture {
-    private static final Set<ResourceLocation> OBSERVED_ENTITY_TYPES = ConcurrentHashMap.newKeySet();
+    private static final Set<String> OBSERVED_MODELS = ConcurrentHashMap.newKeySet();
 
     private EmfModelCapture() {
     }
@@ -27,13 +28,35 @@ public final class EmfModelCapture {
         }
 
         ResourceLocation entityTypeId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-        if (OBSERVED_ENTITY_TYPES.add(entityTypeId)) {
-            AdaptiveEntityHitboxes.LOGGER.info(
-                    "Observed custom EMF model {} for entity type {} (variant {})",
-                    root.modelName,
-                    entityTypeId,
-                    root.currentModelVariant
-            );
+        String observationKey = entityTypeId + ":" + root.modelName + ":" + root.currentModelVariant;
+        if (!OBSERVED_MODELS.add(observationKey)) {
+            return;
         }
+
+        ModelBoundsCalculator.calculate(root, root.currentModelVariant).ifPresentOrElse(
+                bounds -> AdaptiveEntityHitboxes.LOGGER.info(
+                        "Measured EMF model {} for {} (variant {}): model {}w x {}h x {}d blocks, "
+                                + "suggested entity width {}; vanilla entity {}w x {}h",
+                        root.modelName,
+                        entityTypeId,
+                        root.currentModelVariant,
+                        format(bounds.width()),
+                        format(bounds.height()),
+                        format(bounds.depth()),
+                        format(bounds.entityWidth()),
+                        format(entity.getBbWidth()),
+                        format(entity.getBbHeight())
+                ),
+                () -> AdaptiveEntityHitboxes.LOGGER.warn(
+                        "Custom EMF model {} for {} (variant {}) contained no measurable cubes",
+                        root.modelName,
+                        entityTypeId,
+                        root.currentModelVariant
+                )
+        );
+    }
+
+    private static String format(float value) {
+        return String.format(java.util.Locale.ROOT, "%.3f", value);
     }
 }
