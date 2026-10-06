@@ -15,6 +15,11 @@ repositories {
     maven {
         url = 'https://maven.fabricmc.net/'
     }
+
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+    }
 }
 
 dependencies {
@@ -23,6 +28,10 @@ dependencies {
 
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+
+    // Runtime dependencies remain separate and are not bundled into this mod.
+    modImplementation "maven.modrinth:BVzZfTc1:OVZ7HJXt" // ETF 7.2.5 for Fabric 1.21-1.21.1
+    modImplementation "maven.modrinth:4I1XuqiY:VeoAKvQ0" // EMF 3.3.11 for Fabric 1.21-1.21.1
 }
 
 java {

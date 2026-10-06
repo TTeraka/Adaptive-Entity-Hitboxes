@@ -15,3 +15,10 @@ This repository currently contains only the project scaffold:
 No hitbox behavior is implemented yet. The next development step is to identify a stable EMF 3.3.9
 integration point for obtaining the active model root, then calculate and cache conservative model
 bounds before changing any entity dimensions.
+
+## AI-assisted development
+
+The source code for this project was generated with assistance from generative AI. It has been
+reviewed, built, and tested by the project maintainer, but users and contributors should still
+independently review the code and report any problems they find. See [AI_DISCLOSURE.md](AI_DISCLOSURE.md)
+for additional details.

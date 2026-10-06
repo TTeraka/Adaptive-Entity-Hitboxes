@@ -14,11 +14,15 @@
       "dev.teraka.aeh.AdaptiveEntityHitboxes"
     ]
   },
+  "mixins": [
+    "adaptive_entity_hitboxes.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.18.5",
     "minecraft": "~1.21.1",
     "java": ">=21",
     "fabric-api": "*",
-    "entity_model_features": ">=3.3.9"
+    "entity_model_features": ">=3.3.11",
+    "entity_texture_features": ">=7.2.5"
   }
 }
