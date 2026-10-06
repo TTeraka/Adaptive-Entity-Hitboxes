@@ -20,6 +20,12 @@ public abstract class LivingEntityDimensionsMixin implements AdaptiveDimensionsH
     @Unique
     private float adaptiveHitboxes$height = Float.NaN;
 
+    @Unique
+    private float adaptiveHitboxes$vanillaWidth = Float.NaN;
+
+    @Unique
+    private float adaptiveHitboxes$vanillaHeight = Float.NaN;
+
     @Override
     public void adaptiveHitboxes$setDimensions(float width, float height) {
         if (approximatelyEqual(adaptiveHitboxes$width, width)
@@ -43,20 +49,35 @@ public abstract class LivingEntityDimensionsMixin implements AdaptiveDimensionsH
         ((LivingEntity) (Object) this).refreshDimensions();
     }
 
+    @Override
+    public float adaptiveHitboxes$getVanillaWidth() {
+        return adaptiveHitboxes$vanillaWidth;
+    }
+
+    @Override
+    public float adaptiveHitboxes$getVanillaHeight() {
+        return adaptiveHitboxes$vanillaHeight;
+    }
+
     @Inject(method = "getDimensions", at = @At("RETURN"), cancellable = true)
     private void adaptiveHitboxes$useMeasuredDimensions(
             Pose pose,
             CallbackInfoReturnable<EntityDimensions> callbackInfo
     ) {
+        EntityDimensions original = callbackInfo.getReturnValue();
+        adaptiveHitboxes$vanillaWidth = original.width();
+        adaptiveHitboxes$vanillaHeight = original.height();
+
         if (Float.isNaN(adaptiveHitboxes$width)) {
             return;
         }
 
-        EntityDimensions original = callbackInfo.getReturnValue();
-        float eyeHeight = Math.min(original.eyeHeight(), adaptiveHitboxes$height);
+        float width = Math.max(original.width(), adaptiveHitboxes$width);
+        float height = Math.max(original.height(), adaptiveHitboxes$height);
+        float eyeHeight = Math.min(original.eyeHeight(), height);
         callbackInfo.setReturnValue(new EntityDimensions(
-                adaptiveHitboxes$width,
-                adaptiveHitboxes$height,
+                width,
+                height,
                 eyeHeight,
                 original.attachments(),
                 original.fixed()

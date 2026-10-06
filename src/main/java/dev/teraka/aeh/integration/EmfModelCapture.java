@@ -26,6 +26,15 @@ public final class EmfModelCapture {
     private EmfModelCapture() {
     }
 
+    public static void clearCache() {
+        MEASURED_MODELS.clear();
+        EMPTY_MODELS.clear();
+    }
+
+    public static void clear(LivingEntity entity) {
+        clearDimensions(entity);
+    }
+
     public static void observe(
             LivingEntity entity,
             EMFModelPartRoot root,
@@ -87,7 +96,7 @@ public final class EmfModelCapture {
         }
 
         ((AdaptiveDimensionsHolder) entity).adaptiveHitboxes$setDimensions(
-                clamp(bounds.entityWidth()),
+                clamp(bounds.centeredWidth()),
                 clamp(bounds.height())
         );
     }
@@ -105,9 +114,20 @@ public final class EmfModelCapture {
             float rendererScaleY,
             float rendererScaleZ
     ) {
+        AdaptiveDimensionsHolder holder = (AdaptiveDimensionsHolder) entity;
+        float vanillaWidth = holder.adaptiveHitboxes$getVanillaWidth();
+        float vanillaHeight = holder.adaptiveHitboxes$getVanillaHeight();
+        float measuredWidth = clamp(bounds.centeredWidth());
+        float measuredHeight = clamp(bounds.height());
+        float adaptiveWidth = Float.isFinite(vanillaWidth)
+                ? Math.max(vanillaWidth, measuredWidth)
+                : measuredWidth;
+        float adaptiveHeight = Float.isFinite(vanillaHeight)
+                ? Math.max(vanillaHeight, measuredHeight)
+                : measuredHeight;
         AdaptiveEntityHitboxes.LOGGER.info(
                 "Applying EMF model {} to {} (variant {}, renderer scale {}x{}x{}): "
-                        + "model {}w x {}h x {}d blocks, "
+                        + "model {}w x {}h x {}d blocks, centered width {}, "
                         + "adaptive entity {}w x {}h; vanilla entity {}w x {}h",
                 root.modelName,
                 entityTypeId,
@@ -118,10 +138,11 @@ public final class EmfModelCapture {
                 format(bounds.width()),
                 format(bounds.height()),
                 format(bounds.depth()),
-                format(clamp(bounds.entityWidth())),
-                format(clamp(bounds.height())),
-                format(entity.getBbWidth()),
-                format(entity.getBbHeight())
+                format(measuredWidth),
+                format(adaptiveWidth),
+                format(adaptiveHeight),
+                format(vanillaWidth),
+                format(vanillaHeight)
         );
     }
 

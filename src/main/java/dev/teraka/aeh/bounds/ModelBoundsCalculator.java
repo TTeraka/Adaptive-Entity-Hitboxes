@@ -29,17 +29,38 @@ public final class ModelBoundsCalculator {
         List<PartPose> renderedPoses = parts.stream().map(ModelPart::storePose).toList();
 
         try {
-            parts.forEach(ModelPart::resetPose);
             MutableBounds bounds = new MutableBounds();
-            PoseStack poseStack = new PoseStack();
-            poseStack.scale(rendererScaleX, rendererScaleY, rendererScaleZ);
-            visit(root, variant, poseStack, bounds);
+
+            // Keep a stable neutral baseline, but also include the pose EMF prepared for this
+            // render. Some JEMs use animations to position otherwise separate pieces such as a
+            // humanoid head, so measuring only reset poses can omit visible geometry.
+            parts.forEach(ModelPart::resetPose);
+            measure(root, variant, rendererScaleX, rendererScaleY, rendererScaleZ, bounds);
+
+            for (int index = 0; index < parts.size(); index++) {
+                parts.get(index).loadPose(renderedPoses.get(index));
+            }
+            measure(root, variant, rendererScaleX, rendererScaleY, rendererScaleZ, bounds);
+
             return bounds.toImmutable();
         } finally {
             for (int index = 0; index < parts.size(); index++) {
                 parts.get(index).loadPose(renderedPoses.get(index));
             }
         }
+    }
+
+    private static void measure(
+            ModelPart root,
+            int variant,
+            float rendererScaleX,
+            float rendererScaleY,
+            float rendererScaleZ,
+            MutableBounds bounds
+    ) {
+        PoseStack poseStack = new PoseStack();
+        poseStack.scale(rendererScaleX, rendererScaleY, rendererScaleZ);
+        visit(root, variant, poseStack, bounds);
     }
 
     private static void visit(ModelPart part, int variant, PoseStack poseStack, MutableBounds bounds) {

@@ -12,6 +12,14 @@ public record ModelBounds(
         return maxX - minX;
     }
 
+    /**
+     * Minecraft centers an entity bounding box on its position, so an asymmetric model needs
+     * enough width to reach the furthest measured point on either side of that origin.
+     */
+    public float centeredWidth() {
+        return 2.0F * Math.max(Math.abs(minX), Math.abs(maxX));
+    }
+
     public float height() {
         return maxY - minY;
     }
@@ -20,7 +28,4 @@ public record ModelBounds(
         return maxZ - minZ;
     }
 
-    public float entityWidth() {
-        return Math.max(width(), depth());
-    }
 }

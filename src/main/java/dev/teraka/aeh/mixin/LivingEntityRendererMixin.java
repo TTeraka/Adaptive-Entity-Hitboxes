@@ -57,6 +57,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             CallbackInfo callbackInfo
     ) {
         if (!(model instanceof IEMFModel emfModel) || !emfModel.emf$isEMFModel()) {
+            EmfModelCapture.clear(entity);
             return;
         }
 
@@ -70,6 +71,8 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
                     relativeScale(renderedScale.y, adaptiveHitboxes$baseScale.y),
                     relativeScale(renderedScale.z, adaptiveHitboxes$baseScale.z)
             );
+        } else {
+            EmfModelCapture.clear(entity);
         }
     }
 

@@ -1,6 +1,12 @@
 package dev.teraka.aeh;
 
+import dev.teraka.aeh.integration.EmfModelCapture;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.ResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +23,20 @@ public final class AdaptiveEntityHitboxes implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        LOGGER.info("Adaptive Entity Hitboxes loaded; EMF integration is not active yet.");
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(
+                new SimpleSynchronousResourceReloadListener() {
+                    @Override
+                    public ResourceLocation getFabricId() {
+                        return ResourceLocation.fromNamespaceAndPath(MOD_ID, "model_bounds");
+                    }
+
+                    @Override
+                    public void onResourceManagerReload(ResourceManager resourceManager) {
+                        EmfModelCapture.clearCache();
+                        LOGGER.info("Cleared cached EMF model bounds after resource reload");
+                    }
+                }
+        );
+        LOGGER.info("Adaptive Entity Hitboxes loaded");
     }
 }
